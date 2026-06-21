@@ -2,7 +2,7 @@
 
 A minimalist, intimate synced video player for couples. Built with **Node.js + Socket.io** (backend) and **Vanilla JS** (frontend). Server-as-Master architecture for perfect sync.
 
-<img width="1374" height="925" alt="image" src="https://github.com/user-attachments/assets/80a318e9-bc9f-47aa-9345-36f16e69b2a6" />
+<img width="1374" height="917" alt="private-cinema" src="https://github.com/user-attachments/assets/a9161ddc-ae37-4277-99e1-025e7a77580d" />
 
 ## Features
 - Paste any direct video URL (mp4/webm)
