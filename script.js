@@ -85,36 +85,50 @@ function initCinema() {
 
   socket.on('videoLoaded', (state) => applyState(state));
 
+  function syncCurrentTime(currentTime, threshold = 0.75) {
+    if (typeof currentTime !== 'number' || !Number.isFinite(currentTime)) return;
+
+    if (Math.abs(video.currentTime - currentTime) > threshold) {
+      video.currentTime = currentTime;
+    }
+  }
+
   function applyState(state) {
+    isRemoteSync = true;
+
     if (video.src !== state.videoUrl) {
       video.src = state.videoUrl;
     }
-    video.currentTime = state.currentTime;
+
+    syncCurrentTime(state.currentTime);
+
     if (state.isPlaying) {
       video.play().catch(e => console.log('Autoplay prevented'));
     } else {
       video.pause();
     }
+
     updateHeartbeat('synced');
+    setTimeout(() => isRemoteSync = false, 250);
   }
 
   socket.on('syncPlay', (data) => {
     isRemoteSync = true;
-    video.currentTime = data.currentTime;
+    syncCurrentTime(data.currentTime, 0.25);
     video.play().catch(() => {});
     setTimeout(() => isRemoteSync = false, 150);
   });
 
   socket.on('syncPause', (data) => {
     isRemoteSync = true;
-    video.currentTime = data.currentTime;
+    syncCurrentTime(data.currentTime, 0.25);
     video.pause();
     setTimeout(() => isRemoteSync = false, 150);
   });
 
   socket.on('syncSeek', (data) => {
     isRemoteSync = true;
-    video.currentTime = data.currentTime;
+    syncCurrentTime(data.currentTime, 0.25);
     setTimeout(() => isRemoteSync = false, 150);
   });
 
