@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: private-cinema-server
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    repo: ryanraposo/private-cinema
+    branch: main
+    rootDir: .
+    
+  - type: static
+    name: private-cinema-frontend
+    buildCommand: echo "Static site ready"
+    publishDir: .
+    repo: ryanraposo/private-cinema
+    branch: main

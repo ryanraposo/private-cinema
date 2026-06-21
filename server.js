@@ -6,10 +6,13 @@ const path = require('path');
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] }
+  cors: {
+    origin: "*", 
+    methods: ["GET", "POST"]
+  }
 });
 
-// Server-as-Master: Single cozy room state
+// Room state - server as master
 let roomState = {
   videoUrl: '',
   currentTime: 0,
@@ -20,7 +23,7 @@ let roomState = {
 io.on('connection', (socket) => {
   console.log('💕 User joined the cinema. Total:', io.engine.clientsCount);
 
-  // Graceful late-joiner: Send full current state
+  // Late joiner gets full state
   socket.emit('roomState', roomState);
 
   socket.on('loadVideo', (url) => {
@@ -35,7 +38,7 @@ io.on('connection', (socket) => {
     roomState.isPlaying = true;
     roomState.currentTime = currentTime || roomState.currentTime;
     roomState.lastUpdated = Date.now();
-    socket.broadcast.emit('syncPlay', { currentTime: roomState.currentTime });
+    socket.broadcast.emit('syncPlay', { currentTime: roomState.currentTime, serverTime: Date.now() });
   });
 
   socket.on('pause', ({ currentTime }) => {
@@ -51,13 +54,19 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('syncSeek', { currentTime: roomState.currentTime });
   });
 
-  // For drift correction queries
-  socket.on('getState', () => socket.emit('roomState', roomState));
+  // For heartbeat / advanced sync
+  socket.on('getState', () => {
+    socket.emit('roomState', roomState);
+  });
 
   socket.on('disconnect', () => {
     console.log('User left. Remaining:', io.engine.clientsCount);
   });
 });
 
+app.use(express.static('public')); // Local testing
+
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`🎥 Private Cinema server running on ${PORT}`));
+server.listen(PORT, () => {
+  console.log(`🎥 Private Cinema server on http://localhost:${PORT}`);
+});
