@@ -9,8 +9,8 @@ services:
     rootDir: .
 
   - type: web
-    name: private-cinema-frontend
-    runtime: static
-    buildCommand: echo "Static site ready"
-    staticPublishPath: .
-    branch: main
+      name: private-cinema-frontend
+      runtime: static
+      buildCommand: echo "window.ENV = { SOCKET_URL: '${SOCKET_URL}' };" > env.js
+      staticPublishPath: .
+      branch: main
