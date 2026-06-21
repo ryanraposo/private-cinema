@@ -2,6 +2,8 @@
 
 A minimalist, intimate synced video player for couples. Built with **Node.js + Socket.io** (backend) and **Vanilla JS** (frontend). Server-as-Master architecture for perfect sync.
 
+<img width="1374" height="925" alt="image" src="https://github.com/user-attachments/assets/80a318e9-bc9f-47aa-9345-36f16e69b2a6" />
+
 ## Features
 - Paste any direct video URL (mp4/webm)
 - Real-time play/pause/seek sync
