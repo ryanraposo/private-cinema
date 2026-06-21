@@ -25,15 +25,18 @@ let roomState = {
 };
 
 function getCurrentRoomState() {
+  const serverTime = Date.now();
+
   if (!roomState.isPlaying) {
-    return { ...roomState };
+    return { ...roomState, serverTime };
   }
 
-  const elapsedSeconds = (Date.now() - roomState.lastUpdated) / 1000;
+  const elapsedSeconds = (serverTime - roomState.lastUpdated) / 1000;
 
   return {
     ...roomState,
-    currentTime: roomState.currentTime + elapsedSeconds
+    currentTime: roomState.currentTime + elapsedSeconds,
+    serverTime
   };
 }
 
@@ -82,7 +85,7 @@ io.on('connection', (socket) => {
     roomState.isPlaying = true;
     setPlaybackTime(currentTime);
     // Use broadcast so the sender doesn't receive their own play command
-    socket.broadcast.emit('syncPlay', { currentTime: roomState.currentTime, serverTime: Date.now() });
+    socket.broadcast.emit('syncPlay', getCurrentRoomState());
   });
 
   socket.on('pause', ({ currentTime }) => {
@@ -90,14 +93,14 @@ io.on('connection', (socket) => {
 
     roomState.isPlaying = false;
     setPlaybackTime(currentTime);
-    socket.broadcast.emit('syncPause', { currentTime: roomState.currentTime });
+    socket.broadcast.emit('syncPause', getCurrentRoomState());
   });
 
   socket.on('seek', ({ currentTime }) => {
     if (!socket.isAuthenticated) return;
 
     setPlaybackTime(currentTime);
-    socket.broadcast.emit('syncSeek', { currentTime: roomState.currentTime });
+    socket.broadcast.emit('syncSeek', getCurrentRoomState());
   });
 
   // For heartbeat / advanced sync
@@ -111,7 +114,7 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(express.static('public')); // Local testing
+app.use(express.static(path.join(__dirname))); // Local testing
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
