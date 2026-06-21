@@ -1,14 +1,44 @@
 // Private Cinema Client - Minimalist sync for date nights
-const socket = io('https://YOUR-BACKEND.onrender.com'); // ← UPDATE with your Render backend URL
+// Password is configurable in this file (shared secret)
+const PASSWORD = 'date-night'; // ← Change this to your private secret
 
-const video = document.getElementById('video');
-const urlInput = document.getElementById('urlInput');
-const loadBtn = document.getElementById('loadBtn');
-const heartbeat = document.getElementById('heartbeat');
-const statusEl = document.getElementById('status');
+// Socket URL from Render env or fallback
+const SOCKET_URL = window.SOCKET_URL || 'https://YOUR-BACKEND.onrender.com';
+const socket = io(SOCKET_URL);
 
-let isRemoteSync = false;
-let syncCheckInterval = null;
+// Password handling
+const passwordScreen = document.getElementById('passwordScreen');
+const passwordInput = document.getElementById('passwordInput');
+const enterBtn = document.getElementById('enterBtn');
+const passwordError = document.getElementById('passwordError');
+
+function checkPassword() {
+  if (passwordInput.value.trim() === PASSWORD) {
+    passwordScreen.style.display = 'none';
+    initCinema();
+  } else {
+    passwordError.style.opacity = '1';
+    setTimeout(() => passwordError.style.opacity = '0', 2000);
+    passwordInput.value = '';
+    passwordInput.focus();
+  }
+}
+
+enterBtn.addEventListener('click', checkPassword);
+passwordInput.addEventListener('keypress', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+// Main cinema init (called after password)
+function initCinema() {
+  const video = document.getElementById('video');
+  const urlInput = document.getElementById('urlInput');
+  const loadBtn = document.getElementById('loadBtn');
+  const heartbeat = document.getElementById('heartbeat');
+  const statusEl = document.getElementById('status');
+
+  let isRemoteSync = false;
+  let syncCheckInterval = null;
 
 // Heartbeat for that warm, connected feel
 function updateHeartbeat(status) {
@@ -104,3 +134,8 @@ document.addEventListener('keydown', e => {
 });
 
 console.log('%c❤️ Private Cinema initialized - enjoy your date night', 'color:#ff6b6b;font-weight:bold');
+  }
+}
+
+// Start with password screen
+passwordInput.focus();
