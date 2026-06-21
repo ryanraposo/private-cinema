@@ -5,14 +5,12 @@ services:
     plan: free
     buildCommand: npm install
     startCommand: npm start
-    repo: ryanraposo/private-cinema
     branch: main
     rootDir: .
-    
+
   - type: web
     name: private-cinema-frontend
     runtime: static
     buildCommand: echo "Static site ready"
     staticPublishPath: .
-    repo: ryanraposo/private-cinema
     branch: main
