@@ -24,6 +24,26 @@ let roomState = {
   lastUpdated: Date.now()
 };
 
+function getCurrentRoomState() {
+  if (!roomState.isPlaying) {
+    return { ...roomState };
+  }
+
+  const elapsedSeconds = (Date.now() - roomState.lastUpdated) / 1000;
+
+  return {
+    ...roomState,
+    currentTime: roomState.currentTime + elapsedSeconds
+  };
+}
+
+function setPlaybackTime(currentTime) {
+  if (typeof currentTime === 'number' && Number.isFinite(currentTime)) {
+    roomState.currentTime = Math.max(0, currentTime);
+  }
+  roomState.lastUpdated = Date.now();
+}
+
 io.on('connection', (socket) => {
   console.log('👤 New connection. Total clients:', io.engine.clientsCount);
 
@@ -38,7 +58,7 @@ io.on('connection', (socket) => {
       console.log('💕 User authenticated successfully.');
       
       // Send them the full state ONLY after they authenticate
-      socket.emit('roomState', roomState);
+      socket.emit('roomState', getCurrentRoomState());
     } else {
       socket.emit('passwordResult', false);
       console.log('❌ Failed authentication attempt.');
@@ -53,15 +73,14 @@ io.on('connection', (socket) => {
     roomState.currentTime = 0;
     roomState.isPlaying = false;
     roomState.lastUpdated = Date.now();
-    io.emit('videoLoaded', roomState);
+    io.emit('videoLoaded', getCurrentRoomState());
   });
 
   socket.on('play', ({ currentTime }) => {
     if (!socket.isAuthenticated) return;
 
     roomState.isPlaying = true;
-    roomState.currentTime = currentTime || roomState.currentTime;
-    roomState.lastUpdated = Date.now();
+    setPlaybackTime(currentTime);
     // Use broadcast so the sender doesn't receive their own play command
     socket.broadcast.emit('syncPlay', { currentTime: roomState.currentTime, serverTime: Date.now() });
   });
@@ -70,23 +89,21 @@ io.on('connection', (socket) => {
     if (!socket.isAuthenticated) return;
 
     roomState.isPlaying = false;
-    roomState.currentTime = currentTime || roomState.currentTime;
-    roomState.lastUpdated = Date.now();
+    setPlaybackTime(currentTime);
     socket.broadcast.emit('syncPause', { currentTime: roomState.currentTime });
   });
 
   socket.on('seek', ({ currentTime }) => {
     if (!socket.isAuthenticated) return;
 
-    roomState.currentTime = currentTime;
-    roomState.lastUpdated = Date.now();
+    setPlaybackTime(currentTime);
     socket.broadcast.emit('syncSeek', { currentTime: roomState.currentTime });
   });
 
   // For heartbeat / advanced sync
   socket.on('getState', () => {
     if (!socket.isAuthenticated) return;
-    socket.emit('roomState', roomState);
+    socket.emit('roomState', getCurrentRoomState());
   });
 
   socket.on('disconnect', () => {
