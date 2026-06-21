@@ -9,9 +9,10 @@ services:
     branch: main
     rootDir: .
     
-  - type: static
+  - type: web
     name: private-cinema-frontend
+    runtime: static
     buildCommand: echo "Static site ready"
-    publishDir: .
+    staticPublishPath: .
     repo: ryanraposo/private-cinema
     branch: main
