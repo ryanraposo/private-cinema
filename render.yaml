@@ -11,6 +11,6 @@ services:
   - type: web
     name: private-cinema-frontend
     runtime: static
-    buildCommand: echo "window.ENV = { SOCKET_URL: '${SOCKET_URL}' };" > env.js
+    buildCommand: 'echo "window.ENV = { SOCKET_URL: ''${SOCKET_URL}'' };" > env.js'
     staticPublishPath: .
     branch: main
