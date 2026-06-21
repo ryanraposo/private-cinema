@@ -31,16 +31,15 @@
     .heartbeat.synced { background: #4ade80; box-shadow: 0 0 15px #4ade80; animation: none; }
     .heartbeat.jitter { background: #facc15; animation-duration: 0.7s; }
     @keyframes pulse { 50% { transform: scale(1.2); } }
-    .controls-tray {
-      margin-top: 20px; background: rgba(26,18,8,0.95); border-radius: 12px; overflow: hidden;
-    }
-    .controls-tray summary { cursor: pointer; list-style: none; padding: 16px 20px; color: #ffb3b3; font-weight: 600; }
-    .controls-tray summary::-webkit-details-marker { display: none; }
-    .controls-tray summary::after { content: ' ▾'; }
-    .controls-tray:not([open]) summary::after { content: ' ▸'; }
     .controls {
-      display: flex; gap: 12px; flex-wrap: wrap; padding: 0 20px 20px;
+      display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 20px;
     }
+    .debug-menu { flex-basis: 100%; }
+    .debug-menu summary { cursor: pointer; list-style: none; display: inline-block; color: #ffb3b3; font-weight: 600; padding: 4px 0; }
+    .debug-menu summary::-webkit-details-marker { display: none; }
+    .debug-menu summary::after { content: ' ▸'; }
+    .debug-menu[open] summary::after { content: ' ▾'; }
+    .debug-menu button { margin-top: 8px; }
     input { flex: 1; padding: 16px; background: #2a2118; border: 2px solid #4a3728; color: white; border-radius: 8px; font-size: 1.05rem; }
     button { padding: 16px 32px; background: var(--accent); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; }
     button:hover { background: #ff8787; }
@@ -57,14 +56,14 @@
       <video id="video" controls playsinline></video>
     </div>
     
-    <details class="controls-tray">
-      <summary>Video source tray</summary>
-      <div class="controls">
-        <input type="text" id="urlInput" placeholder="Paste direct video URL (e.g. mp4/webm link)">
-        <button id="loadBtn">Load for Us</button>
-        <button id="debugVideoBtn" type="button" title="Loads a public 52-second MP4 test clip">Load 52s Debug MP4</button>
-      </div>
-    </details>
+    <div class="controls">
+      <input type="text" id="urlInput" placeholder="Paste direct video URL (e.g. mp4/webm link)">
+      <button id="loadBtn">Load for Us</button>
+      <details class="debug-menu">
+        <summary>Debug tools</summary>
+        <button id="debugVideoBtn" type="button" title="Loads a public 52-second MP4 test clip">Load debug video</button>
+      </details>
+    </div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
