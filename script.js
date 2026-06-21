@@ -1,7 +1,7 @@
 // Private Cinema Client - Minimalist sync for date nights
 
 // Socket URL from Render env or fallback
-const SOCKET_URL = window.SOCKET_URL || 'https://YOUR-BACKEND.onrender.com';
+const SOCKET_URL = window.ENV.SOCKET_URL || 'https://YOUR-BACKEND.onrender.com';
 const socket = io(SOCKET_URL);
 
 // DOM Elements
