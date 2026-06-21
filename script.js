@@ -134,8 +134,6 @@ document.addEventListener('keydown', e => {
 });
 
 console.log('%c❤️ Private Cinema initialized - enjoy your date night', 'color:#ff6b6b;font-weight:bold');
-  }
-}
 
 // Start with password screen
 passwordInput.focus();
